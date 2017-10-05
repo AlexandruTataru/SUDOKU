@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
+#define DllExport extern "C" __declspec( dllexport ) 
 
-uint8_t *board;
+#include <cstdint>
 
-__declspec(dllexport) void readBoard(uint8_t*);
-__declspec(dllexport) void solveBoard();
-__declspec(dllexport) void retrieveSolvedBoard(uint8_t*);
+DllExport bool loadBoard(uint8_t*);
+DllExport bool solveBoard();
+DllExport bool retrieveSolvedBoard(uint8_t*);

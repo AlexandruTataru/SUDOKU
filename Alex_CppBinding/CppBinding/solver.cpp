@@ -1,6 +1,8 @@
 #include "solver.h"
 
-void readBoard(uint8_t *incomingBoard)
+uint8_t *board;
+
+bool loadBoard(uint8_t *incomingBoard)
 {
 	if (board)
 	{
@@ -14,17 +16,25 @@ void readBoard(uint8_t *incomingBoard)
 	{
 		board[i] = 5;
 	}
+
+	return true;
 }
 
-void solveBoard()
+bool solveBoard()
 {
 	for (uint8_t i = 0; i < 81; ++i)
 	{
 		board[i] += 1;
 	}
+
+	return true;
 }
 
-void retrieveSolvedBoard(uint8_t* solvedBoard)
+bool retrieveSolvedBoard(uint8_t* solvedBoard)
 {
-	solvedBoard = board;
+	for (uint8_t i = 0; i < 81; ++i)
+	{
+		solvedBoard[i] = 5;
+	}
+	return true;
 }
