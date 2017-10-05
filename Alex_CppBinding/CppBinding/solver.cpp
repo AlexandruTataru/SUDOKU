@@ -1,20 +1,37 @@
 #include "solver.h"
 
-uint8_t *board;
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+uint8_t board[9][9];
 
 bool loadBoard(uint8_t *incomingBoard)
 {
-	if (board)
+	AllocConsole();
+	AttachConsole(GetCurrentProcessId());
+	freopen("CON", "w", stdout);
+
+	size_t row = 0, column = 0;
+	for (int i = 0; i < 81; ++i)
 	{
-		delete[] board;
-		board = nullptr;
+		board[row][column] = incomingBoard[i];
+		column++;
+		if (column == 9)
+		{
+			column = 0;
+			row++;
+		}
 	}
 
-	board = new uint8_t[81];
-
-	for (uint8_t i = 0; i < 81; ++i)
+	row = 0; column = 0;
+	for (; row < 9; ++row)
 	{
-		board[i] = 5;
+		for (column = 0; column < 9; ++column)
+		{
+			printf("%d ", board[row][column]);
+		}
+		printf("\n");
 	}
 
 	return true;
@@ -22,11 +39,6 @@ bool loadBoard(uint8_t *incomingBoard)
 
 bool solveBoard()
 {
-	for (uint8_t i = 0; i < 81; ++i)
-	{
-		board[i] += 1;
-	}
-
 	return true;
 }
 
