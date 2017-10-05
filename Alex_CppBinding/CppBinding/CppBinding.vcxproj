@@ -77,6 +77,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)_x64</TargetName>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -99,6 +101,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y "$(SolutionDir)$(Configuration)\$(ProjectName)_x86.dll" "$(SolutionDir)..\Python3\$(ProjectName)_x86.dll"</Command>
+      <Message>Copy dll to Python</Message>
+      <Outputs>$(SolutionDir)..\Python3\$(ProjectName)_x86.dll</Outputs>
+      <Inputs>$(SolutionDir)$(Configuration)\$(ProjectName)_x86.dll</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -113,6 +121,14 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y "$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)_x64.dll" "$(SolutionDir)..\Python3\$(ProjectName)_x64.dll"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Copy dll to Python</Message>
+      <Outputs>$(SolutionDir)..\Python3\$(ProjectName)_x64.dll</Outputs>
+      <Inputs>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)_x64.dll</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -131,6 +147,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y "$(SolutionDir)$(Configuration)\$(ProjectName)_x86.dll" "$(SolutionDir)..\Python3\$(ProjectName)_x86.dll"</Command>
+      <Message>Copy dll to Python</Message>
+      <Outputs>$(SolutionDir)..\Python3\$(ProjectName)_x86.dll</Outputs>
+      <Inputs>$(SolutionDir)$(Configuration)\$(ProjectName)_x86.dll</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -149,6 +171,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>copy /Y "$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)_x64.dll" "$(SolutionDir)..\Python3\$(ProjectName)_x64.dll"</Command>
+      <Message>Copy dll to Python</Message>
+      <Outputs>$(SolutionDir)..\Python3\$(ProjectName)_x64.dll</Outputs>
+      <Inputs>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)_x64.dll</Inputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="solver.cpp" />
