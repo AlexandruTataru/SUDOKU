@@ -76,14 +76,14 @@ bool internal_hasRowDigit(uint8_t rowNr, uint8_t digit)
 
 bool loadBoard(uint8_t *incomingBoard)
 {
-	//AllocConsole();
-	//AttachConsole(GetCurrentProcessId());
-	//freopen("CON", "w", stdout);
+	AllocConsole();
+	AttachConsole(GetCurrentProcessId());
+	freopen("CON", "w", stdout);
 
 	size_t i = 0;
 	for (uint8_t row = 0; row < 9; ++row) for (uint8_t column = 0; column < 9; ++column) board[row][column] = incomingBoard[i++];
 
-	//printBoard(board);
+	printBoard(board);
 
 	return true;
 }
@@ -127,7 +127,7 @@ void markPositionDown(uint8_t tempBoard[][9], position pos)
 	}
 }
 
-bool digitIsSingleOnRow(uint8_t tempBoard[][9], uint8_t row, uint8_t currentDigit, position& pos)
+bool digitIsSingleOnRow(uint8_t tempBoard[][9], uint8_t row, position& pos)
 {
 	int found = 0;
 	for (uint8_t column = 0; column < 9; ++column)
@@ -142,17 +142,21 @@ bool digitIsSingleOnRow(uint8_t tempBoard[][9], uint8_t row, uint8_t currentDigi
 	return found == 1;
 }
 
-bool digitIsSingleOnColumn(uint8_t tempBoard[][9], uint8_t column, uint8_t currentDigit, position& pos)
+bool digitIsSingleOnColumn(uint8_t tempBoard[][9], uint8_t column, position& pos)
 {
 	int found = 0;
+	uint8_t r, c;
 	for (uint8_t row = 0; row < 9; ++row)
 	{
 		if (tempBoard[row][column] == 0)
 		{
-			pos = std::make_pair(row, column);
+			r = row;
+			c = column;
 			found++;
 		}
 	}
+
+	if (found == 1) pos = std::make_pair(r, c);
 
 	return found == 1;
 }
@@ -177,9 +181,13 @@ bool solveBoard()
 			for (uint8_t entry = 0; entry < 9; ++entry)
 			{
 				position pos;
-				if (digitIsSingleOnRow(tempBoard, entry, currentDigit, pos) || digitIsSingleOnColumn(tempBoard, entry, currentDigit, pos))
+				bool inRow = digitIsSingleOnRow(tempBoard, entry, pos);
+				bool inColumn = digitIsSingleOnColumn(tempBoard, entry, pos);
+				if (inRow || inColumn)
 				{
-					//printf("Found certain location for digit %d at r:%d - c:%d\n", currentDigit, pos.first, pos.second);
+					printf("%d %d in entry %d\n", inRow, inColumn, entry);
+					printf("Found certain location for digit %d at r:%d - c:%d\n", currentDigit, pos.first, pos.second);
+					printBoard(tempBoard);
 					board[pos.first][pos.second] = currentDigit;
 				}
 			}
@@ -188,6 +196,7 @@ bool solveBoard()
 			//printBoard(board);
 		}
 	}
+	printBoard(board);
 	return true;
 }
 
