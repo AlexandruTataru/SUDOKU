@@ -1,5 +1,6 @@
 import ctypes
 import datetime
+import sys
 lib = ctypes.WinDLL('CppBinding_x64.dll')
 
 def testDLL():
@@ -42,8 +43,70 @@ def testDLL():
 
         print('Is solved board retrieved? ' + str(returnValue))
 
+        solutionVerified = verifySolution(solvedBoard)
+        print('Is solved board verified and correct? ' + str(solutionVerified))
+
+        if solutionVerified:
+            printBoard(solvedBoard)
+
         if returnValue:
             end = datetime.datetime.now()
             print(end - start)
+
+def verifySolution(board):
+    Matrix = [[0 for x in range(9)] for y in range(9)]
+    k = 0
+    for i in range(9):
+        for j in range(9):
+            Matrix[i][j] = board[k]
+            k += 1
+    
+    for i in range(9):
+        s = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        for j in range(9):
+            if Matrix[i][j] in s:
+                s.discard(Matrix[i][j])
+            else:
+                return False
+            
+        if len(s) != 0:
+            return False
+
+    for i in range(9):
+        s = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        for j in range(9):
+            if Matrix[j][i] in s:
+                s.discard(Matrix[j][i])
+            else:
+                return False
+            
+        if len(s) != 0:
+            return False
+
+    offsetI = 0
+    offsetJ = 0
+    for k in range (9):
+        if k in (1, 2, 4, 5, 7, 8):
+            offsetJ += 3
+        if k in (3, 6):
+            offsetI += 3
+            offsetJ = 0
+        s = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        for i in range (3):
+            for j in range (3):
+                if Matrix[offsetI + i][offsetJ + j] in s:
+                    s.discard(Matrix[offsetI + i][offsetJ + j])
+                else:
+                    return False
+
+    return True
+
+def printBoard(board):
+    k = 0
+    for i in range(9):
+        for j in range(9):
+            sys.stdout.write(str(board[k]) + ' ')
+            k += 1
+        sys.stdout.write('\n')
 
 testDLL()
