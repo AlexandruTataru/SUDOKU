@@ -46,6 +46,7 @@ struct region;
 
 struct square
 {
+    int i, j;
     int value;
     std::set<int> available;
     region *region;
@@ -73,6 +74,8 @@ public:
                 {
                     regions[i/3][j/3].available.insert(k);
                 }
+                squares[i][j].i = i;
+                squares[i][j].j = j;
                 squares[i][j].value = 0;
                 squares[i][j].region = &regions[i/3][j/3];
                 squares[i][j].region->squares.insert(&squares[i][j]);
@@ -81,6 +84,69 @@ public:
                     squares[i][j].available.insert(k);
                 }
             }
+    }
+
+    sudoku_board(const sudoku_board & board)
+    {
+        m_openSquares = board.m_openSquares;
+
+        for (int i = 0; i < 9; ++i)
+            for (int j = 0; j < 9; ++j)
+            {
+                squares[i][j].i = i;
+                squares[i][j].j = j;
+                squares[i][j].region = &regions[i / 3][j / 3];
+                squares[i][j].region->squares.insert(&squares[i][j]);
+            }
+
+        for (int i = 0; i < 9; ++i)
+            for (int j = 0; j < 9; ++j)
+            {
+                squares[i][j].value = board.squares[i][j].value;
+                squares[i][j].available.clear();
+                for (auto it = board.squares[i][j].available.begin(); it != board.squares[i][j].available.end(); ++it)
+                {
+                    squares[i][j].available.insert(*it);
+                }
+            }
+
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+            {
+                regions[i][j].available.clear();
+                for (auto it = board.regions[i][j].available.begin(); it != board.regions[i][j].available.end(); ++it)
+                {
+                    regions[i][j].available.insert(*it);
+                }
+            }
+    }
+
+    sudoku_board & operator=(const sudoku_board & board)
+    {
+        m_openSquares = board.m_openSquares;
+
+        for (int i = 0; i < 9; ++i)
+            for (int j = 0; j < 9; ++j)
+            {
+                squares[i][j].value = board.squares[i][j].value;
+                squares[i][j].available.clear();
+                for (auto it = board.squares[i][j].available.begin(); it != board.squares[i][j].available.end(); ++it)
+                {
+                    squares[i][j].available.insert(*it);
+                }
+            }
+
+        for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
+            {
+                regions[i][j].available.clear();
+                for (auto it = board.regions[i][j].available.begin(); it != board.regions[i][j].available.end(); ++it)
+                {
+                    regions[i][j].available.insert(*it);
+                }
+            }
+
+        return *this;
     }
 
     void add_value(int i, int j, int value)
@@ -108,25 +174,65 @@ public:
         return m_openSquares == 0;
     }
 
-    std::tuple<int, int, int> pick()
+    std::vector<std::tuple<int, int, int> > pick()
     {
-        int ii = -1, jj = -1;
-        int value = -1;
+        std::vector<std::tuple<int, int, int> > result;
+        std::set<int> *availablePointer = NULL;
         int min = 10;
+        int ii = -1, jj = -1;
+
         for (int i = 0; i < 9; ++i)
             for (int j = 0; j < 9; ++j)
             {
                 if (squares[i][j].value == 0
                 &&  squares[i][j].available.size() < min)
                 {
+                    if (squares[i][j].available.size() == 0)
+                    {
+                        return result;
+                    }
+
                     min = squares[i][j].available.size();
-                    value = *(squares[i][j].available.begin());
+                    availablePointer = &squares[i][j].available;
                     ii = i;
                     jj = j;
                 }
             }
 
-        return std::make_tuple(ii, jj, value);
+        if (min > 1)
+        {
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                {
+                    for (auto it = regions[i][j].available.begin(); it != regions[i][j].available.end(); ++it)
+                    {
+                        int posible_positions = 0;
+                        auto x = -1, y = -1;
+                        for (auto itt = regions[i][j].squares.begin(); itt != regions[i][j].squares.end(); ++itt)
+                        {
+                            auto square = *itt;
+                            if (square->available.find(*it) != square->available.end())
+                            {
+                                ++posible_positions;
+                                x = square->i;
+                                y = square->j;
+                            }
+                        }
+                        if (posible_positions == 1)
+                        {
+                            result.emplace_back(std::make_tuple(x, y, *it));
+                            return result;
+                        }
+                    }
+                }
+        }
+
+        for (int value : *availablePointer)
+        {
+            result.emplace_back(std::make_tuple(ii, jj, value));
+        }
+
+        return result;
     }
 
 private:
@@ -160,15 +266,47 @@ bool loadBoard(uint8_t *incomingBoard)
     return true;
 }
 
-bool solveBoard()
+bool solveBoardRecursive(sudoku_board & b)
 {
-    while (!board.solved())
+    while (!b.solved())
     {
-        auto result = board.pick();
-        board.add_value(std::get<0>(result), std::get<1>(result), std::get<2>(result));
+        auto result = b.pick();
+        if (result.size() == 0)
+        {
+            return false;
+        }
+        else if (result.size() == 1)
+        {
+            b.add_value(std::get<0>(result.at(0)), std::get<1>(result.at(0)), std::get<2>(result.at(0)));
+        }
+        else
+        {
+            for (const auto & tuple : result)
+            {
+                sudoku_board bb = b;
+                bb.add_value(std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
+                if (solveBoardRecursive(bb))
+                {
+                    board = bb;
+                    return true;
+                }
+            }
+        }
     }
 
-    return true;
+    if (b.solved())
+    {
+        board = b;
+        return true;
+    }
+
+    return false;
+}
+
+
+bool solveBoard()
+{
+    return solveBoardRecursive(board);
 }
 
 bool retrieveSolvedBoard(uint8_t* solvedBoard)
