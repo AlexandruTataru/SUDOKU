@@ -98,6 +98,9 @@ def verifySolution(board):
                     s.discard(Matrix[offsetI + i][offsetJ + j])
                 else:
                     return False
+                
+        if len(s) != 0:
+            return False
 
     return True
 
