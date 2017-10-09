@@ -180,10 +180,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="API.cpp" />
+    <ClCompile Include="BruteForceSolver.cpp" />
     <ClCompile Include="SimpleSolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="API.h" />
+    <ClInclude Include="Board.h" />
+    <ClInclude Include="BruteForceSolver.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="SimpleSolver.h" />
   </ItemGroup>
