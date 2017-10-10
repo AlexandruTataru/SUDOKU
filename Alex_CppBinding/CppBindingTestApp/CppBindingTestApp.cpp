@@ -6,12 +6,14 @@
 #include "../CppBinding/Board.h"
 
 #include <iostream>
+#include <cstdlib>
 
 int main()
 {
 	Board b;
-	std::cout << "Hello World!" << std::endl;
-	int x; std::cin >> x;
+	b.placeValue(5, 5, 8);
+	b.printBoard();
+	getchar();
     return 0;
 }
 
