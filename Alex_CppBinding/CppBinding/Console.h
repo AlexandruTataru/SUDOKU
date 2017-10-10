@@ -23,6 +23,7 @@ public:
 	Console& operator << (const T& obj)
 	{
 		std::cout << obj;
+		std::cout.flush();
 		return *this;
 	}
 };

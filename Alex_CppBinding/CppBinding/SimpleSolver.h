@@ -11,7 +11,7 @@ class SimpleSolver
 	typedef std::vector<position> positions;
 
 	uint8_t board[9][9];
-	Console console;
+	//Console console;
 public:
 	SimpleSolver();
 	~SimpleSolver();

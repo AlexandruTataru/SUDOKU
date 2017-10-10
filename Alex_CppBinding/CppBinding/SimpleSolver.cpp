@@ -65,9 +65,9 @@ void SimpleSolver::printBoard(uint8_t board[][9])
 	{
 		for (uint8_t column = 0; column < 9; ++column)
 		{
-			console << (int)board[row][column] << " ";
+			//console << (int)board[row][column] << " ";
 		}
-		console << "\n";
+		//console << "\n";
 	}
 }
 

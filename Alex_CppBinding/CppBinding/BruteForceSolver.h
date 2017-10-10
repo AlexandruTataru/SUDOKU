@@ -1,26 +1,10 @@
 #pragma once
 
-#include <cstdint>
-#include <set>
+#include "Board.h"
 
 class BruteForceSolver
 {
-	struct Region;
-	struct Square;
-
-	struct Square
-	{
-		uint8_t value, row, column;
-		std::set<uint8_t> possibleValues;
-		Region* region;
-	};
-
-	struct Region
-	{
-		std::set<Square*> includedSquares;
-	};
-
-	Square board[9][9];
+	Board board;
 	
 public:
 	BruteForceSolver();
