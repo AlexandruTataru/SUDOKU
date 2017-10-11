@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "../CppBinding/API.h"
+#include "../CppBinding/Board.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -18,7 +19,7 @@ int main()
 	for (int i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i) board[positions[i]] = values[i];
 
 
-	loadBoard(board);
+	/*loadBoard(board);
 	solveBoard();
 	retrieveSolvedBoard(solvedBoard);
 	int idx = 0;
@@ -29,7 +30,21 @@ int main()
 			std::cout << (int)solvedBoard[idx++] << " ";
 		}
 		std::cout << "\n";
+	}*/
+
+	Board b;
+	size_t i = 0;
+	for (uint8_t row = 0; row < 9; ++row)
+	{
+		for (uint8_t column = 0; column < 9; ++column)
+		{
+			uint8_t value = board[i];
+			if (value != 0) b.placeValue(row, column, value);
+			++i;
+		}
 	}
+	b.printBoard();
+
 	getchar();
     return 0;
 }

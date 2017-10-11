@@ -133,7 +133,7 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
-				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
 
@@ -143,7 +143,7 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
-				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
 
@@ -153,7 +153,7 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
-				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
 
@@ -173,7 +173,7 @@ public:
 					{
 						if (std::find(square->allowedValues.begin(), square->allowedValues.end(), digit) != square->allowedValues.end())
 						{
-							placeValue(square->row, square->column, square->value);
+							placeValue(square->row, square->column, digit);
 						}
 					}
 				}

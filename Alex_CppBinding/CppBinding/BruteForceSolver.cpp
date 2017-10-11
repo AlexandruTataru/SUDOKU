@@ -26,19 +26,25 @@ bool BruteForceSolver::loadBoard(uint8_t* incomingBoard)
 
 bool BruteForceSolver::processBoard(Board board)
 {
-	cout << "Board has " << (int)board.getNrEmptyCells() << " empty cells\n";
+	//cout << "Board has " << (int)board.getNrEmptyCells() << " empty cells\n";
+	//if ((int)board.getNrEmptyCells() == 0) return false;
+	console << ".";
 	for (uint8_t r = 0; r < 9; ++r)
 	{
 		for (uint8_t c = 0; c < 9; ++c)
 		{
-			if (board(r, c).value != 0)
+			if (board(r, c).allowedValues.size() != 0)
 			{
 				Board::Square& freeSquare = board(r,c);
 				for (auto allowedValue : freeSquare.allowedValues)
 				{
 					Board tempBoard = board;
 					tempBoard.placeValue(freeSquare.row, freeSquare.column, allowedValue);
-					if (tempBoard.isSolved()) return true;
+					if (tempBoard.isSolved())
+					{
+						console << "Solved the SUDOKU\n";
+						return true;
+					}
 					if (processBoard(tempBoard)) return true;
 				}
 			}
