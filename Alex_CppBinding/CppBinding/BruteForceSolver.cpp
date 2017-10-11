@@ -17,6 +17,7 @@ bool BruteForceSolver::loadBoard(uint8_t* incomingBoard)
 		for (uint8_t column = 0; column < 9; ++column)
 		{
 			//board(row,column).value = incomingBoard[i++];
+			board.placeValue(row, column, incomingBoard[i++]);
 		}
 	}
 	return false;

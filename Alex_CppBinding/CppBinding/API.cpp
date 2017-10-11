@@ -7,15 +7,15 @@ BruteForceSolver solver2;
 
 bool loadBoard(uint8_t *incomingBoard)
 {
-	return solver1.loadBoard(incomingBoard);
+	return solver2.loadBoard(incomingBoard);
 }
 
 bool solveBoard()
 {
-	return solver1.solveBoard();
+	return solver2.solveBoard();
 }
 
 bool retrieveSolvedBoard(uint8_t* solvedBoard)
 {
-	return solver1.retrieveSolvedBoard(solvedBoard);
+	return solver2.retrieveSolvedBoard(solvedBoard);
 }

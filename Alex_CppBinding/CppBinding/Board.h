@@ -41,6 +41,14 @@ public:
 			region = &reg;
 			reg.includedSquares.emplace_back(this);
 		}
+
+		void AssignLocationWithValue(uint8_t r, uint8_t c, Region& reg, Square s)
+		{
+			AssignLocation(r, c, reg);
+			value = s.value;
+			allowedValues.clear();
+			std::copy(s.allowedValues.begin(), s.allowedValues.end(), std::back_inserter(allowedValues));
+		}
 	};
 
 	struct Region
@@ -48,7 +56,7 @@ public:
 		std::vector<Square*> includedSquares;
 	};
 
-	Square board[9][9];
+	mutable Square board[9][9];
 	Region regions[3][3];
 
 	Board()
@@ -56,12 +64,29 @@ public:
 		for (uint8_t row = 0; row < 9; ++row) for (uint8_t column = 0; column < 9; ++column) board[row][column].AssignLocation(row, column, regions[row / 3][column / 3]);
 	}
 
+	Board(const Board& other)
+	{
+		for (uint8_t row = 0; row < 9; ++row) for (uint8_t column = 0; column < 9; ++column) board[row][column].AssignLocationWithValue(row, column, regions[row / 3][column / 3], other(row, column));
+	}
+
 	void printBoard()
 	{
+		console << "Printing actual values\n";
 		for (uint8_t r = 0;r < 9;++r)
 		{
 			for (uint8_t c = 0;c < 9;++c)
 				console << (int)board[r][c].value << " ";
+			console << "\n";
+		}
+	}
+
+	void printAvailableMovesBoard()
+	{
+		console << "Printing available moves\n";
+		for (uint8_t r = 0; r < 9; ++r)
+		{
+			for (uint8_t c = 0; c < 9; ++c)
+				console << (int)board[r][c].allowedValues.size() << " ";
 			console << "\n";
 		}
 	}
@@ -88,30 +113,57 @@ public:
 		for (auto square : square.region->includedSquares)
 		{
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+			}
 		}
 
 		// Process row
 		for (auto square : getRow(r))
 		{
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+			}
 		}
 
 		// Process column
 		for (auto square : getColumn(c))
 		{
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.size() == 1) square->value = square->allowedValues[0];
+			}
 		}
 
 		// Process direct square
 		square.value = v;
 		square.allowedValues.clear();
-		square.allowedValues.emplace_back(v);
+
+		std::vector<uint8_t> allowedValuesInRegion;
+		for (auto region : regions)
+		{
+			for (auto square : region->includedSquares) std::copy(square->allowedValues.begin(), square->allowedValues.end(), std::back_inserter(allowedValuesInRegion));
+			for (uint8_t digit = 1; digit <= 9; ++digit)
+			{
+				if (std::count(allowedValuesInRegion.begin(), allowedValuesInRegion.end(), digit) == 1)
+				{
+					for (auto square : region->includedSquares)
+					{
+						if (std::find(square->allowedValues.begin(), square->allowedValues.end(), digit) != square->allowedValues.end())
+						{
+							placeValue(square->row, square->column, square->value);
+						}
+					}
+				}
+			}
+		}
 	}
 
-	Square& operator ()(uint8_t r, uint8_t c)
+	Square& operator ()(uint8_t r, uint8_t c) const
 	{
 		return board[r][c];
 	}
