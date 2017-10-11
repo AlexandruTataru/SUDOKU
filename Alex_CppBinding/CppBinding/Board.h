@@ -105,6 +105,24 @@ public:
 		return column;
 	}
 
+	uint8_t getNrEmptyCells()
+	{
+		uint8_t emptyCells = 0;
+		for (uint8_t r = 0; r < 9; ++r) for (uint8_t c = 0; c < 9; ++c) if(board[r][c].value == 0) ++emptyCells;
+		return emptyCells;
+	}
+
+	bool isSolved()
+	{
+		uint8_t sum = 0;
+		for (uint8_t r = 0; r < 9; ++r) for (uint8_t c = 0; c < 9; ++c) sum += board[r][c].value;
+		if (sum == 405)
+		{
+			console << "Found a solved board\n";
+		}
+		return sum == 405;
+	}
+
 	void placeValue(uint8_t r, uint8_t c, uint8_t v)
 	{
 		Square &square = board[r][c];

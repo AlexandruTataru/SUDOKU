@@ -16,7 +16,7 @@ public:
 
 	~Console()
 	{
-		FreeConsole();
+		//FreeConsole();
 	}
 
 	template<class T>

@@ -5,7 +5,10 @@
 class BruteForceSolver
 {
 	Board board;
+	Console console;
 	
+	bool processBoard(Board board);
+
 public:
 	BruteForceSolver();
 	~BruteForceSolver();
