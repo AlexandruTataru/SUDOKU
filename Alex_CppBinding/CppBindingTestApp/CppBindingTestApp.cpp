@@ -39,13 +39,16 @@ int main()
 		for (uint8_t column = 0; column < 9; ++column)
 		{
 			uint8_t value = board[i];
-			if (value != 0) b.placeValue(row, column, value);
+			if (value != 0)
+			{
+				b.placeValue(row, column, value);
+				b.printBoard();
+			}
 			++i;
 		}
 	}
-	b.printBoard();
-
 	getchar();
+
     return 0;
 }
 

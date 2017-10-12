@@ -74,8 +74,13 @@ public:
 		console << "Printing actual values\n";
 		for (uint8_t r = 0;r < 9;++r)
 		{
-			for (uint8_t c = 0;c < 9;++c)
-				console << (int)board[r][c].value << " ";
+			for (uint8_t c = 0; c < 9; ++c)
+			{
+				console << (int)board[r][c].value;
+				if (c == 2 || c == 5) console << "|";
+				else console << " ";
+			}
+			if (r == 2 || r == 5) console << "\n-----------------";
 			console << "\n";
 		}
 	}
@@ -162,18 +167,23 @@ public:
 		square.allowedValues.clear();
 
 		std::vector<uint8_t> allowedValuesInRegion;
-		for (auto region : regions)
+		for (uint8_t r = 0; r < 3; ++r)
 		{
-			for (auto square : region->includedSquares) std::copy(square->allowedValues.begin(), square->allowedValues.end(), std::back_inserter(allowedValuesInRegion));
-			for (uint8_t digit = 1; digit <= 9; ++digit)
+			for (uint8_t c = 0; c < 3; ++c)
 			{
-				if (std::count(allowedValuesInRegion.begin(), allowedValuesInRegion.end(), digit) == 1)
+				Region* region = &regions[r][c];
+				allowedValuesInRegion.clear();
+				for (auto square : region->includedSquares) std::copy(square->allowedValues.begin(), square->allowedValues.end(), std::back_inserter(allowedValuesInRegion));
+				for (uint8_t digit = 1; digit <= 9; ++digit)
 				{
-					for (auto square : region->includedSquares)
+					if (std::count(allowedValuesInRegion.begin(), allowedValuesInRegion.end(), digit) == 1)
 					{
-						if (std::find(square->allowedValues.begin(), square->allowedValues.end(), digit) != square->allowedValues.end())
+						for (auto square : region->includedSquares)
 						{
-							placeValue(square->row, square->column, digit);
+							if (std::find(square->allowedValues.begin(), square->allowedValues.end(), digit) != square->allowedValues.end())
+							{
+								placeValue(square->row, square->column, digit);
+							}
 						}
 					}
 				}
