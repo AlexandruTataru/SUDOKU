@@ -12,7 +12,7 @@
 bool processBoard(Board board, size_t depth)
 {
 	bool isSolved = board.isSolved();
-	//cout << "Depth: " << board.getNrEmptyCells() << "solved: " << std::boolalpha << isSolved << "\n";
+	cout << "Depth: " << board.getNrEmptyCells() << " solved: " << std::boolalpha << isSolved << "\n";
 	if (isSolved) getchar();
 	/*if ((int)board.getNrEmptyCells() == 0)
 	{
@@ -24,13 +24,14 @@ bool processBoard(Board board, size_t depth)
 	{
 		for (uint8_t c = 0; c < 9; ++c)
 		{
-			if (board(r, c).allowedValues.size() != 0)
+			if (board(r, c).value == 0)
 			{
 				Board::Square& freeSquare = board(r, c);
+				if (freeSquare.allowedValues.empty()) return false;
 				for (auto allowedValue : freeSquare.allowedValues)
 				{
 					Board tempBoard = board;
-					tempBoard.placeValue(freeSquare.row, freeSquare.column, allowedValue);
+					tempBoard.simplePlaceValue(freeSquare.row, freeSquare.column, allowedValue);
 					if (tempBoard.isSolved())
 					{
 						cout << "Solved the SUDOKU\n";
@@ -78,7 +79,6 @@ int main()
 			if (value != 0)
 			{
 				b.placeValue(row, column, value);
-				b.printBoard();
 			}
 			++i;
 		}

@@ -117,7 +117,7 @@ public:
 		{
 			for (uint8_t c = 0; c < 9; ++c)
 			{
-				if (board[r][c].value == 0)
+				if (board[r][c].allowedValues.size() > 0)
 				{
 					++emptyCells;
 				}
@@ -135,6 +135,41 @@ public:
 			console << "Found a solved board\n";
 		}
 		return sum == 405;
+	}
+
+	void simplePlaceValue(uint8_t r, uint8_t c, uint8_t v)
+	{
+		Square *square = &board[r][c];
+
+		// Process direct square
+		square->value = v;
+		square->allowedValues.clear();
+
+		for (auto square : square->region->includedSquares)
+		{
+			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
+				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+			}
+		}
+
+		// Process row
+		for (auto square : getRow(r))
+		{
+			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
+				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+			}
+		}
+
+		// Process column
+		for (auto square : getColumn(c))
+		{
+			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
+			{
+				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+			}
+		}
 	}
 
 	void placeValue(uint8_t r, uint8_t c, uint8_t v)
