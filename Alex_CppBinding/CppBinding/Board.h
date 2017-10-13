@@ -110,10 +110,19 @@ public:
 		return column;
 	}
 
-	uint8_t getNrEmptyCells()
+	size_t getNrEmptyCells()
 	{
-		uint8_t emptyCells = 0;
-		for (uint8_t r = 0; r < 9; ++r) for (uint8_t c = 0; c < 9; ++c) if(board[r][c].value == 0) ++emptyCells;
+		size_t emptyCells = 0;
+		for (uint8_t r = 0; r < 9; ++r)
+		{
+			for (uint8_t c = 0; c < 9; ++c)
+			{
+				if (board[r][c].value == 0)
+				{
+					++emptyCells;
+				}
+			}
+		}
 		return emptyCells;
 	}
 
@@ -130,14 +139,19 @@ public:
 
 	void placeValue(uint8_t r, uint8_t c, uint8_t v)
 	{
-		Square &square = board[r][c];
+		Square *square = &board[r][c];
+
+		// Process direct square
+		square->value = v;
+		square->allowedValues.clear();
 
 		// Process region
-		for (auto square : square.region->includedSquares)
+		for (auto square : square->region->includedSquares)
 		{
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.empty()) console << "Found a dead end";
 				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
@@ -148,6 +162,7 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.empty()) console << "Found a dead end";
 				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
@@ -158,13 +173,10 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+				if (square->allowedValues.empty()) console << "Found a dead end";
 				if (square->allowedValues.size() == 1) placeValue(square->row, square->column, square->allowedValues[0]);
 			}
 		}
-
-		// Process direct square
-		square.value = v;
-		square.allowedValues.clear();
 
 		std::vector<uint8_t> allowedValuesInRegion;
 		for (uint8_t r = 0; r < 3; ++r)

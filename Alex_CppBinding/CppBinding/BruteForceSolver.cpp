@@ -26,9 +26,13 @@ bool BruteForceSolver::loadBoard(uint8_t* incomingBoard)
 
 bool BruteForceSolver::processBoard(Board board)
 {
-	//cout << "Board has " << (int)board.getNrEmptyCells() << " empty cells\n";
-	//if ((int)board.getNrEmptyCells() == 0) return false;
-	console << ".";
+	cout << "Board has " << (int)board.getNrEmptyCells() << " empty cells\n";
+	if ((int)board.getNrEmptyCells() == 0)
+	{
+		board.printBoard();
+		bool isSolved = board.isSolved();
+		return board.isSolved();
+	}
 	for (uint8_t r = 0; r < 9; ++r)
 	{
 		for (uint8_t c = 0; c < 9; ++c)

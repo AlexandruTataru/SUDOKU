@@ -9,10 +9,46 @@
 #include <iostream>
 #include <cstdlib>
 
+bool processBoard(Board board, size_t depth)
+{
+	bool isSolved = board.isSolved();
+	//cout << "Depth: " << board.getNrEmptyCells() << "solved: " << std::boolalpha << isSolved << "\n";
+	if (isSolved) getchar();
+	/*if ((int)board.getNrEmptyCells() == 0)
+	{
+		board.printBoard();
+		bool isSolved = board.isSolved();
+		return board.isSolved();
+	}*/
+	for (uint8_t r = 0; r < 9; ++r)
+	{
+		for (uint8_t c = 0; c < 9; ++c)
+		{
+			if (board(r, c).allowedValues.size() != 0)
+			{
+				Board::Square& freeSquare = board(r, c);
+				for (auto allowedValue : freeSquare.allowedValues)
+				{
+					Board tempBoard = board;
+					tempBoard.placeValue(freeSquare.row, freeSquare.column, allowedValue);
+					if (tempBoard.isSolved())
+					{
+						cout << "Solved the SUDOKU\n";
+						return true;
+					}
+					if (processBoard(tempBoard, ++depth)) return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 int main()
 {
-	uint8_t values[] = { 2, 6, 7, 1, 6, 8, 7, 9, 1, 9, 4, 5, 8, 2, 1, 4, 4, 6, 2, 9, 5, 3, 2, 8, 9, 3, 7, 4, 4, 5, 3, 6, 7, 3, 1, 8 };
-	uint8_t positions[] = {3, 4, 6, 8, 9, 10, 13, 16, 18, 19, 23, 24, 27, 28, 30, 34, 38, 39, 41, 42, 46, 50, 52, 53, 56, 57, 61, 62, 64, 67, 70, 71, 72, 74, 76, 77};
+	uint8_t values[] = { 6, 1, 2, 7, 9, 1, 5, 6, 4, 8, 2, 6, 7, 5, 9, 4, 5, 9, 3, 8, 3, 6, 1, 7 };
+	uint8_t positions[] = { 0, 2, 5, 7, 10, 12, 15, 23, 26, 28, 34, 38, 42, 46, 52, 54, 57, 65, 68, 70, 73, 75, 78, 80 };
 	uint8_t board[81];
 	uint8_t solvedBoard[81];
 	for (auto& elem : board) elem = 0;
@@ -47,6 +83,8 @@ int main()
 			++i;
 		}
 	}
+	//b.printBoard();
+	processBoard(b, 0);
 	getchar();
 
     return 0;
