@@ -9,19 +9,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <thread>
+#include <atomic>
 
-void threadMethod(Board& b, uint8_t r, uint8_t c, uint8_t value)
-{
-	b.simplePlaceValue(r, c, value);
-	if (b.isSolved())
-	{
-		cout << "Solved the SUDOKU\n";
-		b.printBoard();
-	}
-	processBoard(b);
-}
-
-bool processBoard(Board board)
+bool processBoard(Board& board)
 {
 	std::vector<Board::Square*> bestSquares = board.bestSquares();
 
@@ -47,10 +37,20 @@ bool processBoard(Board board)
 	return false;
 }
 
+std::atomic<int> nrThreads = 0;
+
+void threadMethod(Board& b)
+{
+	++nrThreads;
+	processBoard(b);
+	--nrThreads;
+	cout << "Still running threads " << nrThreads << endl;
+}
+
 int main()
 {
-	uint8_t values[] = { 6, 1, 2, 7, 9, 1, 5, 6, 4, 8, 2, 6, 7, 5, 9, 4, 5, 9, 3, 8, 3, 6, 1, 7 };
-	uint8_t positions[] = { 0, 2, 5, 7, 10, 12, 15, 23, 26, 28, 34, 38, 42, 46, 52, 54, 57, 65, 68, 70, 73, 75, 78, 80 };
+	uint8_t values[] = { 3, 8, 5, 1, 2, 5, 7, 4, 1, 9, 5, 7, 3, 2, 1, 4, 9 };
+	uint8_t positions[] = { 14, 16, 17, 20, 22, 30, 32, 38, 42, 46, 54, 61, 62, 65, 67, 76, 80 };
 	uint8_t board[81];
 	uint8_t solvedBoard[81];
 	for (auto& elem : board) elem = 0;
@@ -84,7 +84,26 @@ int main()
 			++i;
 		}
 	}
-	processBoard(b);
+	size_t nrThreads = 0;
+	for (uint8_t row = 0; row < 9; ++row)
+	{
+		for (uint8_t column = 0; column < 9; ++column)
+		{
+			Board::Square& s = b(row, column);
+			if (s.isAvailable())
+			{
+				Board tempBoard = b;
+				for (auto& v : s.allowedValues)
+				{
+					tempBoard.simplePlaceValue(row, column, v);
+					std::thread t(threadMethod, tempBoard);
+					t.detach(); ++nrThreads;
+				}
+			}
+		}
+	}
+	cout << "Finished creating all " << nrThreads << " threads" << endl;
+
 	getchar();
 
     return 0;
