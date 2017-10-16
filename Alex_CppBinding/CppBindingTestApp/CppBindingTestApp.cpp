@@ -8,38 +8,39 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <thread>
 
-bool processBoard(Board board, size_t depth)
+void threadMethod(Board& b, uint8_t r, uint8_t c, uint8_t value)
 {
-	bool isSolved = board.isSolved();
-	cout << "Depth: " << board.getNrEmptyCells() << " solved: " << std::boolalpha << isSolved << "\n";
-	if (isSolved) getchar();
-	/*if ((int)board.getNrEmptyCells() == 0)
+	b.simplePlaceValue(r, c, value);
+	if (b.isSolved())
 	{
-		board.printBoard();
-		bool isSolved = board.isSolved();
-		return board.isSolved();
-	}*/
-	for (uint8_t r = 0; r < 9; ++r)
+		cout << "Solved the SUDOKU\n";
+		b.printBoard();
+	}
+	processBoard(b);
+}
+
+bool processBoard(Board board)
+{
+	std::vector<Board::Square*> bestSquares = board.bestSquares();
+
+	if (bestSquares.size() == 0) return false;
+
+	for (auto& square : bestSquares)
 	{
-		for (uint8_t c = 0; c < 9; ++c)
+		for (auto& v : square->allowedValues)
 		{
-			if (board(r, c).value == 0)
+			Board tempBoard = board;
+			//std::thread t(threadMethod, tempBoard, square->row, square->column, v);
+			tempBoard.simplePlaceValue(square->row, square->column, v);
+			if (tempBoard.isSolved())
 			{
-				Board::Square& freeSquare = board(r, c);
-				if (freeSquare.allowedValues.empty()) return false;
-				for (auto allowedValue : freeSquare.allowedValues)
-				{
-					Board tempBoard = board;
-					tempBoard.simplePlaceValue(freeSquare.row, freeSquare.column, allowedValue);
-					if (tempBoard.isSolved())
-					{
-						cout << "Solved the SUDOKU\n";
-						return true;
-					}
-					if (processBoard(tempBoard, ++depth)) return true;
-				}
+				cout << "Solved the SUDOKU\n";
+				tempBoard.printBoard();
+				return true;
 			}
+			if (processBoard(tempBoard)) return true;
 		}
 	}
 
@@ -78,13 +79,12 @@ int main()
 			uint8_t value = board[i];
 			if (value != 0)
 			{
-				b.placeValue(row, column, value);
+				b.simplePlaceValue(row, column, value);
 			}
 			++i;
 		}
 	}
-	//b.printBoard();
-	processBoard(b, 0);
+	processBoard(b);
 	getchar();
 
     return 0;

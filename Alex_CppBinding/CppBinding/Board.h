@@ -49,6 +49,11 @@ public:
 			allowedValues.clear();
 			std::copy(s.allowedValues.begin(), s.allowedValues.end(), std::back_inserter(allowedValues));
 		}
+
+		bool isAvailable()
+		{
+			return value == 0;
+		}
 	};
 
 	struct Region
@@ -126,14 +131,39 @@ public:
 		return emptyCells;
 	}
 
+	std::vector<Square*> bestSquares()
+	{
+		size_t smallestNrOfAvailableMoves = 9;
+		for (uint8_t r = 0; r < 9; ++r)
+		{
+			for (uint8_t c = 0; c < 9; ++c)
+			{
+				if (board[r][c].isAvailable() && board[r][c].allowedValues.size() < smallestNrOfAvailableMoves)
+				{
+					smallestNrOfAvailableMoves = board[r][c].allowedValues.size();
+				}
+			}
+		}
+
+		std::vector<Square*> bestSquares;
+
+		if (smallestNrOfAvailableMoves == 0) return bestSquares;
+
+		for (uint8_t r = 0; r < 9; ++r)
+		{
+			for (uint8_t c = 0; c < 9; ++c)
+			{
+				if (board[r][c].allowedValues.size() == smallestNrOfAvailableMoves) bestSquares.push_back(&board[r][c]);
+			}
+		}
+
+		return bestSquares;
+	}
+
 	bool isSolved()
 	{
-		uint8_t sum = 0;
+		size_t sum = 0;
 		for (uint8_t r = 0; r < 9; ++r) for (uint8_t c = 0; c < 9; ++c) sum += board[r][c].value;
-		if (sum == 405)
-		{
-			console << "Found a solved board\n";
-		}
 		return sum == 405;
 	}
 
@@ -168,6 +198,31 @@ public:
 			if (std::find(square->allowedValues.begin(), square->allowedValues.end(), v) != square->allowedValues.end())
 			{
 				square->allowedValues.erase(std::find(square->allowedValues.begin(), square->allowedValues.end(), v));
+			}
+		}
+
+		std::vector<uint8_t> allowedValuesInRegion;
+		for (uint8_t r = 0; r < 3; ++r)
+		{
+			for (uint8_t c = 0; c < 3; ++c)
+			{
+				Region* region = &regions[r][c];
+				allowedValuesInRegion.clear();
+				for (auto square : region->includedSquares) std::copy(square->allowedValues.begin(), square->allowedValues.end(), std::back_inserter(allowedValuesInRegion));
+				for (uint8_t digit = 1; digit <= 9; ++digit)
+				{
+					if (std::count(allowedValuesInRegion.begin(), allowedValuesInRegion.end(), digit) == 1)
+					{
+						for (auto square : region->includedSquares)
+						{
+							if (std::find(square->allowedValues.begin(), square->allowedValues.end(), digit) != square->allowedValues.end())
+							{
+								square->allowedValues.clear();
+								square->allowedValues.emplace_back(digit);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
