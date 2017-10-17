@@ -5,12 +5,16 @@
 
 #include "../CppBinding/API.h"
 #include "../CppBinding/Board.h"
+#include "NorvicSudoku.h"
 
 #include <iostream>
 #include <cstdlib>
 #include <thread>
 #include <atomic>
 #include <ppltasks.h>
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
 
 bool processBoard(Board& board)
 {
@@ -58,6 +62,19 @@ int main()
 	for (int i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i) board[positions[i]] = values[i];
 
 
+	Sudoku::init();
+	string line(81, '.');
+	for (int i = 0; i < sizeof(positions) / sizeof(positions[0]); ++i) line[positions[i]] = (char)(values[i] + 48);
+	cout << line << endl;
+	if (auto S = solve(unique_ptr<Sudoku>(new Sudoku(line)))) {
+		S->write(cout);
+	}
+	else {
+		cout << "No solution";
+	}
+	cout << "Entered recursively just " << enters << " times" << endl;
+	cout << endl;
+
 	/*loadBoard(board);
 	solveBoard();
 	retrieveSolvedBoard(solvedBoard);
@@ -71,7 +88,7 @@ int main()
 		std::cout << "\n";
 	}*/
 
-	Board b;
+	/*Board b;
 	size_t i = 0;
 	for (uint8_t row = 0; row < 9; ++row)
 	{
@@ -85,6 +102,14 @@ int main()
 			++i;
 		}
 	}
+
+	PTP_POOL pool = NULL;
+	TP_CALLBACK_ENVIRON CallBackEnviron;
+	InitializeThreadpoolEnvironment(&CallBackEnviron);
+	pool = CreateThreadpool(NULL);
+	SetThreadpoolThreadMaximum(pool, 300);
+	SetThreadpoolThreadMinimum(pool, 1);
+
 	size_t nrThreads = 0;
 	for (uint8_t row = 0; row < 9; ++row)
 	{
@@ -97,6 +122,8 @@ int main()
 				for (auto& v : s.allowedValues)
 				{
 					tempBoard.simplePlaceValue(row, column, v);
+					//std::thread t(threadMethod, tempBoard);
+					//t.detach();
 					concurrency::create_task([&tempBoard]()
 					{
 						threadMethod(tempBoard);
@@ -107,7 +134,7 @@ int main()
 	}
 	cout << "Finished creating all " << nrThreads << " threads" << endl;
 
-	getchar();
+	getchar();*/
 
     return 0;
 }
