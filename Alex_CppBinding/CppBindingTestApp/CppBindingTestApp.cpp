@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <thread>
 #include <atomic>
+#include <ppltasks.h>
 
 bool processBoard(Board& board)
 {
@@ -43,7 +44,7 @@ void threadMethod(Board& b)
 {
 	++nrThreads;
 	processBoard(b);
-	--nrThreads;
+	//--nrThreads;
 	cout << "Still running threads " << nrThreads << endl;
 }
 
@@ -96,8 +97,10 @@ int main()
 				for (auto& v : s.allowedValues)
 				{
 					tempBoard.simplePlaceValue(row, column, v);
-					std::thread t(threadMethod, tempBoard);
-					t.detach(); ++nrThreads;
+					concurrency::create_task([&tempBoard]()
+					{
+						threadMethod(tempBoard);
+					});
 				}
 			}
 		}
