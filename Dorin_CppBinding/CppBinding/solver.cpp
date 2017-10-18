@@ -69,14 +69,8 @@ bool solveBoard()
 bool retrieveSolvedBoard(uint8_t* solvedBoard)
 {
     cons << "\nSolved board:\n";
-    for (int i = 0; i < 9; ++i)
-    {
-        for (int j = 0; j < 9; ++j)
-        {
-            cons << board(i, j) << " ";
-        }
-        cons << "\n";
-    }
+    board.print();
+    cons << "\n";
 
     for (int i = 0; i < 81; ++i)
     {

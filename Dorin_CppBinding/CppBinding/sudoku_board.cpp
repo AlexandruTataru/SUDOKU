@@ -137,7 +137,7 @@ std::vector<std::tuple<int, int, int> > sudoku_board::picks() const
         for (int j = 0; j < 9; ++j)
         {
             if (m_squares[i][j].value == 0
-                && m_squares[i][j].available.size() < min)
+            &&  m_squares[i][j].available.size() < min)
             {
                 if (m_squares[i][j].available.size() == 0)
                 {
