@@ -29,31 +29,31 @@ bool loadBoard(uint8_t *incomingBoard)
 }
 
 /// Backtracking
-bool solveBoardRecursive(sudoku_board & b)
+bool solveBoardRecursive(sudoku_board & input, sudoku_board & output)
 {
-    if (b.solved())
+    if (input.solved())
     {
-        board = b;
+        output = input;
         return true;
     }
 
-    auto result = b.picks();
+    auto result = input.picks();
     if (result.size() == 0)
     {
         return false;
     }
     else if (result.size() == 1)
     {
-        b.add_value(std::get<0>(result.at(0)), std::get<1>(result.at(0)), std::get<2>(result.at(0)));
-        return solveBoardRecursive(b);
+        input.add_value(std::get<0>(result.at(0)), std::get<1>(result.at(0)), std::get<2>(result.at(0)));
+        return solveBoardRecursive(input, output);
     }
     else
     {
         for (const auto & tuple : result)
         {
-            sudoku_board bb = b;
-            bb.add_value(std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
-            if (solveBoardRecursive(bb)) return true;
+            sudoku_board b = input;
+            b.add_value(std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
+            if (solveBoardRecursive(b, output)) return true;
         }
     }
 
@@ -63,7 +63,7 @@ bool solveBoardRecursive(sudoku_board & b)
 
 bool solveBoard()
 {
-    return solveBoardRecursive(board);
+    return solveBoardRecursive(board, board);
 }
 
 bool retrieveSolvedBoard(uint8_t* solvedBoard)
