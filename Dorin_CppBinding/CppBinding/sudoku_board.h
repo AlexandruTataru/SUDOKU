@@ -38,6 +38,8 @@ public:
 
     std::vector<std::tuple<int, int, int> > picks() const;
 
+    void print();
+
 private:
     square m_squares[9][9];
     region m_regions[3][3];

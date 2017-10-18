@@ -1,4 +1,7 @@
 #include "sudoku_board.h"
+#include "Console.h"
+
+console cns;
 
 /// Constructor
 sudoku_board::sudoku_board()
@@ -182,4 +185,20 @@ std::vector<std::tuple<int, int, int> > sudoku_board::picks() const
     }
 
     return result;
+}
+
+
+void sudoku_board::print()
+{
+    for (int i = 0; i < 9; ++i)
+    {
+        for (int j = 0; j < 9; ++j)
+        {
+            cns << m_squares[i][j].value;
+            if (j == 2 || j == 5) cns << "|";
+            else cns << " ";
+        }
+        if (i == 2 || i == 5) cns << "\n-----------------";
+        cns << "\n";
+    }
 }

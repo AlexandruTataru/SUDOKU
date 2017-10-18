@@ -183,6 +183,7 @@
     <ClCompile Include="sudoku_board.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Console.h" />
     <ClInclude Include="solver.h" />
     <ClInclude Include="sudoku_board.h" />
   </ItemGroup>
